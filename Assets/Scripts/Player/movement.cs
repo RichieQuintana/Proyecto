@@ -39,10 +39,15 @@ public class movement : MonoBehaviour
         }
 
         // Detectar la escalera y habilitar la escalada
+        // Detectar la escalera y habilitar la escalada
         bool enEscalera = DetectarEscalera();
         if (enEscalera)
         {
             Escalar();
+        }
+        else
+        {
+            rb.gravityScale = gravedadInicial; // Restaurar la gravedad cuando no está en una escalera
         }
     }
 
@@ -67,11 +72,16 @@ public class movement : MonoBehaviour
 
     private bool DetectarEscalera()
     {
-        // Implementa la detección de la escalera aquí (OverlapBox o OverlapCircle)
-        // Devuelve true si está en la escalera, false si no
-        // Puedes usar boxCollider2D.bounds para obtener el área del personaje
-        // y verificar si se superpone con la escalera
-        return false; // Cambia esto según tu implementación
+        // Definir el tamaño y la posición del área de detección de la escalera
+        Vector2 posicionCentro = boxCollider2D.bounds.center;
+        Vector2 tamañoBox = new Vector2(boxCollider2D.bounds.size.x, boxCollider2D.bounds.size.y * 1.5f);
+
+        // Verificar si el área se solapa con la capa "Escalera"
+        LayerMask capaEscalera = LayerMask.GetMask("Escalera");
+        Collider2D collider = Physics2D.OverlapBox(posicionCentro, tamañoBox, 0f, capaEscalera);
+
+        // Devolver true si se detecta una escalera
+        return collider != null;
     }
 
     private void Escalar()
@@ -80,6 +90,16 @@ public class movement : MonoBehaviour
         float movimientoVertical = Input.GetAxis("Vertical");
         Vector2 fuerzaVertical = new Vector2(rb.velocity.x, movimientoVertical * velocidadEscalera);
         rb.velocity = fuerzaVertical;
+    }
+    private void OnDrawGizmos()
+    {
+        if (boxCollider2D != null)
+        {
+            Gizmos.color = Color.red;
+            Vector2 posicionCentro = boxCollider2D.bounds.center;
+            Vector2 tamañoBox = new Vector2(boxCollider2D.bounds.size.x, boxCollider2D.bounds.size.y * 1.5f);
+            Gizmos.DrawWireCube(posicionCentro, tamañoBox);
+        }
     }
 }
 
