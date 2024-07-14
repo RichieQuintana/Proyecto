@@ -10,13 +10,13 @@ public class movement : MonoBehaviour
     private Rigidbody2D rb;
     private bool mirandoDerecha = true;
     private float gravedadInicial;
-    private BoxCollider2D boxCollider2D;
+    private CapsuleCollider2D boxCollider2D;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         gravedadInicial = rb.gravityScale;
-        boxCollider2D = GetComponent<BoxCollider2D>();
+        boxCollider2D = GetComponent<CapsuleCollider2D>();
     }
 
     private void Update()
@@ -59,7 +59,11 @@ public class movement : MonoBehaviour
 
     private void Saltar()
     {
-        rb.AddForce(new Vector2(0, fuerzaSalto), ForceMode2D.Impulse);
+        // Aplicar impulso hacia arriba solo si el personaje está en el suelo
+        if (Mathf.Abs(rb.velocity.y) < 0.01f)
+        {
+            rb.AddForce(new Vector2(0, fuerzaSalto), ForceMode2D.Impulse);
+        }
     }
 
     private void Girar()
